@@ -11,10 +11,14 @@ def index():
 
     if request.method == 'POST':
         try:
+            # Λήψη και μετατροπή των δεδομένων από την φόρμα
             height = float(request.form['height']) / 100
             weight = float(request.form['weight'])
+            
+            # Υπολογισμός του BMI
             bmi = weight / (height ** 2)
 
+            # Καθορισμός μηνυμάτων υγείας και ποσοστού κινδύνου
             if bmi < 18.5:
                 health_message = "Λιποβαρής"
                 advice = "Συνιστάται να αυξήσετε την πρόσληψη θερμίδων και να συμβουλευτείτε έναν διατροφολόγο."
