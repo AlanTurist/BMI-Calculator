@@ -45,4 +45,4 @@ def index():
     return render_template('index.html', bmi=bmi, health_message=health_message, advice=advice, risk_percentage=risk_percentage)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
