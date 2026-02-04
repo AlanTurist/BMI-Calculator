@@ -1,10 +1,9 @@
 import os
 from typing import Optional, Tuple
 
-from flask import Flask, redirect, render_template, request, session, url_for
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "dev-change-me")
 
 
 def _classify_bmi(bmi: float) -> Tuple[str, str]:
@@ -42,7 +41,7 @@ def _healthy_weight_range(height_m: float) -> Tuple[float, float]:
 
 
 def _parse_inputs() -> Tuple[Optional[float], Optional[float], Optional[str]]:
-    # Επιστρέφει (height_cm, weight_kg, error_message)
+    # Returns (height_cm, weight_kg, error_message)
     try:
         height_cm = float((request.form.get("height") or "").strip().replace(",", "."))
         weight_kg = float((request.form.get("weight") or "").strip().replace(",", "."))
@@ -73,30 +72,25 @@ def _compute(height_cm: float, weight_kg: float) -> dict:
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    # IMPORTANT:
+    # In many embeds (e.g. Wix), third‑party cookies can be blocked. So we do NOT rely on server sessions.
+    inputs = {"height": "", "weight": ""}
+    error = None
+    result = None
+
     if request.method == "POST":
         height_cm, weight_kg, error = _parse_inputs()
-
-        session["last_inputs"] = {
-            "height": "" if height_cm is None else height_cm,
-            "weight": "" if weight_kg is None else weight_kg,
+        inputs = {
+            "height": "" if height_cm is None else str(height_cm),
+            "weight": "" if weight_kg is None else str(weight_kg),
         }
-
-        if error:
-            session["last_error"] = error
-            session.pop("last_result", None)
-            return redirect(url_for("index"))
-
-        session["last_result"] = _compute(height_cm, weight_kg)
-        session.pop("last_error", None)
-        return redirect(url_for("index"))
-
-    inputs = session.get("last_inputs") or {"height": "", "weight": ""}
-    error = session.pop("last_error", None)
-    result = session.get("last_result")
+        if not error:
+            result = _compute(height_cm, weight_kg)
 
     return render_template("index.html", inputs=inputs, error=error, result=result)
 
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "5000"))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    # NOTE: debug should be False in production (use gunicorn/traefik).
+    app.run(host="0.0.0.0", port=port, debug=False)

@@ -56,9 +56,6 @@
             <h2 class="text-lg font-semibold">Στοιχεία</h2>
             <p class="text-sm text-gray-600 dark:text-gray-400">Βάλε ύψος και βάρος. Πατάς, βγαίνει αποτέλεσμα.</p>
           </div>
-          <!--<div class="text-xs text-gray-500 dark:text-gray-400">
-            * ενδεικτικό εργαλείο
-          </div>-->
         </div>
 
         {% if error %}
@@ -76,7 +73,7 @@
               inputmode="decimal"
               name="height"
               id="height"
-              value="{{ inputs.height }}"
+              value="{{ inputs.get('height', '') }}"
               placeholder="π.χ. 176.5"
               required
               class="w-full px-4 py-3 rounded-2xl border border-black/10 dark:border-white/10 bg-white/80 dark:bg-black/20 focus:outline-none focus:ring-2 focus:ring-blue-500/60">
@@ -90,7 +87,7 @@
               inputmode="decimal"
               name="weight"
               id="weight"
-              value="{{ inputs.weight }}"
+              value="{{ inputs.get('weight', '') }}"
               placeholder="π.χ. 78.2"
               required
               class="w-full px-4 py-3 rounded-2xl border border-black/10 dark:border-white/10 bg-white/80 dark:bg-black/20 focus:outline-none focus:ring-2 focus:ring-blue-500/60">
@@ -117,8 +114,8 @@
       <!-- Results card -->
       <section class="glass rounded-3xl shadow-lg bg-white/70 dark:bg-white/5 border border-black/5 dark:border-white/10 p-6">
         <div class="mb-5">
-          <h2 class="text-lg font-semibold">Αποτελέσματα</h2>
-          <!--<p class="text-sm text-gray-600 dark:text-gray-400">Καθαρά.</p>-->
+          <h2 class="text-lg font-semibold">Βάλε στοιχεία</h2>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Συμπλήρωσε στοιχεία αριστερά για να εμφανιστεί αποτέλεσμα..</p>
         </div>
 
         {% if result %}
@@ -151,9 +148,8 @@
                   <div class="bg-red-500/60" style="flex: 10.1;"></div>
                 </div>
 
-                {% set pos = (bmi / 40.0) * 100 %}
-                {% if pos < 0 %}{% set pos = 0 %}{% endif %}
-                {% if pos > 100 %}{% set pos = 100 %}{% endif %}
+                {% set pos = ((bmi / 40.0) * 100) %}
+                {% set pos = 0 if pos < 0 else (100 if pos > 100 else pos) %}
 
                 <div class="marker" style="left: calc({{ "%.2f"|format(pos) }}% - 1px);"></div>
                 <div class="marker-dot" style="left: calc({{ "%.2f"|format(pos) }}% - 5px);"></div>
@@ -184,15 +180,15 @@
           </div>
         {% else %}
           <div class="rounded-2xl border border-dashed border-black/10 dark:border-white/15 p-6 text-gray-600 dark:text-gray-400">
-            <div class="font-semibold text-gray-900 dark:text-gray-200">Βάλε στοιχεία.</div>
-            <div class="mt-1 text-sm">Συμπλήρωσε στοιχεία αριστερά για να εμφανιστεί αποτέλεσμα.</div>
+            <div class="font-semibold text-gray-900 dark:text-gray-200">Αποτέλεσμα.</div>
+            <div class="mt-1 text-sm">Συμπληρώστε τα στοιχεία σας αριστερά.</div>
           </div>
         {% endif %}
       </section>
     </main>
 
     <footer class="mt-8 text-center text-xs text-gray-500 dark:text-gray-400">
-      © <span id="year"></span> • easymate.gr
+      © <span id="year"></span> • BMI Calculator • EasyMate
     </footer>
   </div>
 

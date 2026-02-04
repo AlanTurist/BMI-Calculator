@@ -1,6 +1,15 @@
 (function(){
   const htmlEl = document.documentElement;
-  const stored = localStorage.getItem('theme');
+
+  const safeGet = (k) => {
+    try { return window.localStorage ? localStorage.getItem(k) : null; } catch(e){ return null; }
+  };
+  const safeSet = (k,v) => {
+    try { if(window.localStorage) localStorage.setItem(k,v); } catch(e){}
+  };
+
+  const stored = safeGet('theme');
+
   const setIcons = () => {
     const sun = document.getElementById('icon-sun');
     const moon = document.getElementById('icon-moon');
@@ -17,7 +26,7 @@
   if(btn){
     btn.addEventListener('click', () => {
       const isDark = htmlEl.classList.toggle('dark');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      safeSet('theme', isDark ? 'dark' : 'light');
       setIcons();
     });
   }
